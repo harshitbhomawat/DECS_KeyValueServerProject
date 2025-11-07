@@ -76,7 +76,10 @@ int main() {
         }
 
         if (db_get(key, value))
+        {
+            cache.put(key, value);
             res.set_content(value, "text/plain");
+        }
         else
             res.set_content("Not found key in DB", "text/plain");
     });
