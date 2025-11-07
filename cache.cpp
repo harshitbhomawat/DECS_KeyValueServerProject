@@ -11,7 +11,7 @@ bool LRUCache::get(const std::string &key, std::string &value_out) {
         ++misses_;
         return false;
     }
-    // move the accessed item to front (most recent)
+    // moving the accessed item to front (most recent)
     items_.splice(items_.begin(), items_, it->second);
     value_out = it->second->second;
     ++hits_;
@@ -28,7 +28,7 @@ void LRUCache::put(const std::string &key, const std::string &value) {
         return;
     }
 
-    // evict if needed
+    // evict item if cache capacity exceeded if needed
     if (items_.size() >= capacity_) {
         auto &last = items_.back();
         map_.erase(last.first);

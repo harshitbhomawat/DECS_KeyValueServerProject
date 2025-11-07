@@ -10,22 +10,16 @@
 
 class LRUCache {
 public:
-    // capacity > 0
     explicit LRUCache(size_t capacity);
 
-    // Try to get value for key. Returns true and sets value_out on hit.
     bool get(const std::string &key, std::string &value_out);
 
-    // Insert or update a key -> value. If capacity exceeded, evict LRU item.
     void put(const std::string &key, const std::string &value);
 
-    // Remove a key if present. Returns true if removed.
     bool erase(const std::string &key);
 
-    // Clear all entries
     void clear();
 
-    // Stats
     size_t size();
     size_t capacity() const;
     uint64_t hits() const;
@@ -38,9 +32,9 @@ private:
     size_t capacity_;
     mutable std::mutex mtx_;
 
-    // stats
+    // cache performance statistics
     uint64_t hits_ = 0;
     uint64_t misses_ = 0;
 };
 
-#endif // CACHE_H
+#endif

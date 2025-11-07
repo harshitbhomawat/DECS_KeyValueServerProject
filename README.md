@@ -48,7 +48,7 @@ ALTER SCHEMA public OWNER TO kvuser;
 \q
 
 
-//Now Craeate Table
+//Now Create Table
 
 psql -U kvuser -d kvdb
 //when prompted for password use 'kvpass'
@@ -66,3 +66,7 @@ psql -U kvuser -d kvdb -c "SELECT * FROM kv_store;"
 curl -X POST -d "key=name&value=harshit" http://localhost:8080/create
 
 //To send 
+
+//To run:
+g++ server.cpp database.cpp cache.cpp -o server -I/usr/include/postgresql -lpq -pthread -std=c++17
+
