@@ -23,8 +23,16 @@ int main() {
     });
     
     server.Post("/create", [&](const httplib::Request& req, httplib::Response& res) {
+    
         std::string key, value;
-        
+        if (req.has_param("key") && req.has_param("value")) {
+            key = req.get_param_value("key");
+            value = req.get_param_value("value");
+        } else {
+            res.set_content("Missing key/value", "text/plain");
+            return;
+        }
+        /*
         //curl -X POST "http://localhost:8080/create?key=testKey&value=testValue"
         if (req.has_param("key") && req.has_param("value")) {
             key = req.get_param_value("key");
@@ -35,7 +43,7 @@ int main() {
         if (req.has_form_data("key") && req.has_form_data("value")) {
             key = req.get_form_value("key");
             value = req.get_form_value("value");
-        }
+        }*/
 
         if (key.empty() || value.empty()) {
             res.status = 400;

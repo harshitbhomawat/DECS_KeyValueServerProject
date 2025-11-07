@@ -1,0 +1,31 @@
+services:
+  kv_postgres:
+    image: postgres:16
+    container_name: kv_postgres
+    environment:
+      POSTGRES_USER: kvuser
+      POSTGRES_PASSWORD: kvpass
+      POSTGRES_DB: kvdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db_init.sql:/docker-entrypoint-initdb.d/db_init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kvuser -d kvdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  kv_server:
+    build: .
+    container_name: kv_server
+    depends_on:
+      kv_postgres:
+        condition: service_healthy  # wait until DB is ready
+    environment:
+      - DB_HOST=kv_postgres
+      - DB_USER=kvuser
+      - DB_PASS=kvpass
+      - DB_NAME=kvdb
+    ports:
+      - "8080:8080"

@@ -1,0 +1,28 @@
+# C++ build artifacts
+*.o
+*.out
+*.exe
+server
+*.log
+
+# IDE / editor stuff
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Docker volumes / data
+postgres-data/
+*.pid
+
+# Python distutils cache (some docker-compose installs)
+__pycache__/
+*.pyc
+
+# Container build cache
+*.tar
+
+# Temporary files
+tmp/

@@ -1,10 +1,26 @@
 #include "database.h"
 #include <iostream>
+#include <cstdlib>
 
 static const int POOL_SIZE = 10;
 
 static DBConnectionPool* db_pool = nullptr;
 static std::string global_conninfo = "dbname=kvdb user=kvuser password=kvpass host=127.0.0.1";
+
+std::string get_conninfo_from_env() {
+    const char* dbname = std::getenv("DB_NAME");
+    const char* dbuser = std::getenv("DB_USER");
+    const char* dbpass = std::getenv("DB_PASS");
+    const char* dbhost = std::getenv("DB_HOST");
+
+    std::string conninfo =
+        "dbname=" + std::string(dbname ? dbname : "kvdb") +
+        " user=" + std::string(dbuser ? dbuser : "kvuser") +
+        " password=" + std::string(dbpass ? dbpass : "kvpass") +
+        " host=" + std::string(dbhost ? dbhost : "127.0.0.1");
+    return conninfo;
+}
+
 
 DBConnectionPool::DBConnectionPool(int size, const std::string &conninfo) {
     for (int i = 0; i < size; i++) {
@@ -87,7 +103,7 @@ bool db_delete(const std::string &key) {
 }
 
 bool db_connect() {
-    db_pool = new DBConnectionPool(POOL_SIZE, global_conninfo);
+    db_pool = new DBConnectionPool(POOL_SIZE, get_conninfo_from_env());
     std::cout << "DB Connection Pool Created (" << POOL_SIZE << " connections)" << std::endl;
     return true;
 }
