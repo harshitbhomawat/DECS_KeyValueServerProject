@@ -65,7 +65,8 @@ psql -U kvuser -d kvdb -c "SELECT * FROM kv_store;"
 // To send create request:
 curl -X POST -d "key=name&value=harshit" http://localhost:8080/create
 
-//To send 
+//To send read request:
+curl "http://localhost:8080/read?key=name"
 
 //To run:
 g++ server.cpp database.cpp cache.cpp -o server -I/usr/include/postgresql -lpq -pthread -std=c++17
