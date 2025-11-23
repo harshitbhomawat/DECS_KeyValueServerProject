@@ -7,6 +7,7 @@
 #include <mutex>
 #include <optional>
 #include <cstddef>
+#include <iostream>
 
 class LRUCache {
 public:
@@ -24,6 +25,7 @@ public:
     size_t capacity() const;
     uint64_t hits() const;
     uint64_t misses() const;
+    void reset_stats();
 
 private:
     using Item = std::pair<std::string, std::string>;

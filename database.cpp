@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 
-static const int POOL_SIZE = 10;
+static const int POOL_SIZE = 16;
 
 static DBConnectionPool* db_pool = nullptr;
 static std::string global_conninfo = "dbname=kvdb user=kvuser password=kvpass host=127.0.0.1";
@@ -101,6 +101,22 @@ bool db_delete(const std::string &key) {
     db_pool->release(conn);
     return ok;
 }
+
+bool db_flush() {
+    PGconn* conn = db_pool->acquire();
+
+    std::string query = "DELETE FROM kv_store;";
+
+    PGresult* res = PQexec(conn, query.c_str());
+
+    bool ok = (PQresultStatus(res) == PGRES_COMMAND_OK);
+
+    PQclear(res);
+    db_pool->release(conn);
+
+    return ok;
+}
+
 
 bool db_connect() {
     db_pool = new DBConnectionPool(POOL_SIZE, get_conninfo_from_env());

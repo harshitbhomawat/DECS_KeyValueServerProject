@@ -27,5 +27,6 @@ void db_close();
 bool db_insert(const std::string &key, const std::string &value);
 bool db_get(const std::string &key, std::string &value);
 bool db_delete(const std::string &key);
+bool db_flush();  //Only for testing.
 
 #endif

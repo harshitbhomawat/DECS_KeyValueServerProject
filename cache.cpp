@@ -5,15 +5,17 @@ LRUCache::LRUCache(size_t capacity) : capacity_(capacity) {
 }
 
 bool LRUCache::get(const std::string &key, std::string &value_out) {
-    std::lock_guard<std::mutex> lock(mtx_);
+    //std::lock_guard<std::mutex> lock(mtx_);
     auto it = map_.find(key);
     if (it == map_.end()) {
+        //std::cout<<"[CACHE MISS] key=" << key << std::endl;
         ++misses_;
         return false;
     }
     // moving the accessed item to front (most recent)
-    items_.splice(items_.begin(), items_, it->second);
+    //items_.splice(items_.begin(), items_, it->second);
     value_out = it->second->second;
+    //std::cout<<"[CACHE HIT] key=" << key << std::endl;
     ++hits_;
     return true;
 }
@@ -74,3 +76,10 @@ uint64_t LRUCache::misses() const {
     std::lock_guard<std::mutex> lock(mtx_);
     return misses_;
 }
+
+void LRUCache::reset_stats() {
+    std::lock_guard<std::mutex> lock(mtx_);
+    hits_ = 0;
+    misses_ = 0;
+}
+

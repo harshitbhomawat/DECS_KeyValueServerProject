@@ -4,11 +4,13 @@
 #include "httplib.h"
 #include "database.h"
 #include "cache.h"
+#include <sstream>
+
 
 int main() {
 
     // setting cache capacity 400 
-    static LRUCache cache(400);
+    static LRUCache cache(20000);
 
 
     if (!db_connect()) {
@@ -17,6 +19,13 @@ int main() {
     }
 
     httplib::Server server;
+
+    // int threads = std::thread::hardware_concurrency();
+    // if (threads == 0) threads = 4;
+    int threads = 64;
+    server.new_task_queue = [threads] {
+        return new httplib::ThreadPool(threads);
+    };
 
     server.Get("/", [](const httplib::Request& req, httplib::Response& res) {
         res.set_content("Key-Value Server Running!", "text/plain");
@@ -98,6 +107,36 @@ int main() {
         else
             res.set_content("Not found or error", "text/plain");
     });
+
+    server.Get("/stats", [&](const httplib::Request& req, httplib::Response& res) {
+        // fetch stats
+        uint64_t hits = cache.hits();
+        uint64_t misses = cache.misses();
+
+        // reset after reading
+        cache.reset_stats();
+
+        // Produce JSON manually (no json library needed)
+        std::ostringstream out;
+        out << "{ \"hits\": " << hits << ", \"misses\": " << misses << " }";
+
+        res.set_content(out.str(), "application/json");
+    });
+
+    server.Post("/flush", [&](const httplib::Request &req, httplib::Response &res) {
+        bool ok = db_flush();
+        cache.clear();
+
+        if (!ok) {
+            res.status = 500;
+            res.set_content("Failed to flush DB\n", "text/plain");
+            return;
+        }
+
+        res.status = 200;
+        res.set_content("Flushed DB + Cache\n", "text/plain");
+    });
+
 
 
     std::cout << "Server running at http://localhost:8080\n";
