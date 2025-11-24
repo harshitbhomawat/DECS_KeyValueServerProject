@@ -20,9 +20,9 @@ int main() {
 
     httplib::Server server;
 
-    // int threads = std::thread::hardware_concurrency();
-    // if (threads == 0) threads = 4;
-    int threads = 64;
+    int threads = std::thread::hardware_concurrency();
+    if (threads == 0) threads = 8;
+    //int threads = 8;
     server.new_task_queue = [threads] {
         return new httplib::ThreadPool(threads);
     };
